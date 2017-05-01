@@ -2,7 +2,7 @@ import re
 from song import Song
 
 def parse_album(line):
-    match = re.compile(r'.*(\d+)(\w+)[「『](.*)[」』]$').match(line)
+    match = re.compile(r'\W*(\d+)(\w+)[「『](.*)[」』]$').match(line)
     return (False, match.group(1) + match.group(2) + ' ' + match.group(3)) if match else (True, '')
 
 def parse_release_date(line):
@@ -31,7 +31,9 @@ def get_prefix(meta, others=None):
     return ['REM DATE %s' % meta['date'], 'PERFORMER "%s"' % meta['performer'], 'TITLE "%s"' % title]
 
 def normalize(text):
-    return text.translate(str.maketrans('', '', '　 ？?！!·…'))
+    o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ'
+    n_s = '0123456789ABDEGHJKMNSTU'
+    return text.translate(str.maketrans(o_s, n_s, '　 ？?！!·…'))
 
 def purge_line(line):
     return re.sub('\[注 \d+\]', '', line)
