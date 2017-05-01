@@ -68,8 +68,8 @@ def deal_with_all_files(root_path):
         rel_type_str = rel_path[0]
         if rel_type_str.startswith('Type'):
             type_str = 'Type-' + rel_type_str[len('Type-'):]
-        elif rel_type_str.startswith('劇場盤'):
-            type_str = '劇場盤'
+        elif rel_type_str in meta_parser.get_other_disc_type():
+            type_str = rel_type_str
         else:
             continue
         rel_disc_str = rel_path_str[1]
@@ -80,8 +80,8 @@ def deal_with_all_files(root_path):
         if type_str not in table:
             continue
         for file in files:
-            fn = meta_parser.normalize(file)
-            if not (fn.endswith('.wav') or fn.endswith('.mp3') or fn.endswith('.flac') or fn.endswith('.ape') or fn.endswith('.m4a')):
+            fn = meta_parser.normalize(file)            
+            if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
             for keyname, keyvalue in table[type_str].items():
                 if (fn.find(keyname) >= 0):

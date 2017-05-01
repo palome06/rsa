@@ -1,6 +1,7 @@
 from song import Song
 import meta_parser
 import re
+import type_a
 
 table={}
 
@@ -23,22 +24,10 @@ def handle_with_line(thetype, line):
     song = Song(track_id, title, performer, is_off_vocal, length)
     song.thetype = thetype
     pair = (meta_parser.normalize(title), is_off_vocal)
-    if pair not in table:
-        table[pair] = song
-
-# def load_web(url):
-#     import html2text
-#     import urllib.request
-#     html = urllib.request.urlopen(url).read().decode("utf-8")
-#     h2t = html2text.HTML2Text()
-#     h2t.ignore_links = True
-#     raw = h2t.handle(html)
-#     # raw = html2text.html2text(html)
-#     # response = requests.get(video_data['youtube_url'],proxies = proxy,verify=False)
-#     # raw = html_to_text(html)
-#     raw = raw.encode('GBK', 'ignore').decode('GBK');
-#     with open('raw.txt', 'w') as f:
-#         f.write(raw)
+    if thetype not in table:
+        table[thetype] = {}
+    if pair not in table[thetype]:
+        table[thetype][pair] = song
 
 def load_wikipedia(filename):
     meta = {}
@@ -71,7 +60,7 @@ def load_wikipedia(filename):
                 elif line.endswith('の シングル'):
                     meta['performer'] = meta_parser.parse_performer(line, 'シングル')
             elif mode == 'track_mode':
-                if line.startswith('Type') or line in ['劇場盤', '剧场盘', '通常盤', '通常盘', 'NGT48 CD盤', 'セブン-イレブン限定盤']:
+                if line.startswith('Type') or line in meta_parser.get_other_disc_type():
                     thetype = line
                 elif line.startswith('CD'):
                     will_read = True
@@ -100,25 +89,40 @@ def load_wikipedia(filename):
 def deal_with_all_files(root_path):
     import os
     for root, dirs, files in os.walk(root_path):
+        if len(files) <= 0:
+            continue
+        rel_path_str = root[(len(root_path) + 1):]
+        if len(rel_path_str) == 0 or rel_path_str.find('\\') >= 0:
+            continue
+        rel_type_str = rel_path_str
+        if rel_type_str.startswith('Type'):
+            type_str = 'Type-' + rel_type_str[len('Type-'):]
+        elif rel_type_str in meta_parser.get_other_disc_type():
+            type_str = rel_type_str
+        else:
+            continue
+        if type_str not in table:
+            continue
         for file in files:
             fn = meta_parser.normalize(file)
             is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off-vocal', 'instrument', 'music'])
             if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
-            for (keyname, keyoff) in table.keys():
-                if fn.find(keyname) >= 0 and keyoff == is_off_vocal:
-                    table[(keyname, keyoff)].set_file(file)
+            for (keyname, keyoff) in table[type_str].keys():
+               if fn.find(keyname) >= 0 and keyoff == is_off_vocal:
+                    table[type_str][(keyname, keyoff)].set_file(rel_path_str + '\\' + file)
 
 def write_cue(root_path, meta):
     import os
-    prefix = meta_parser.get_prefix(meta)
-    with open(root_path + '/Sets.cue', 'w', encoding='utf-8-sig') as f:
-        f.writelines("%s\n" % l for l in prefix)
-        for song in meta_parser.assign_new_track_id(table.values()):
-            f.writelines("%s\n" % l for l in song.to_cue_item())
+    for type_str in table.keys():
+        prefix = meta_parser.get_prefix(meta, {'type_str':type_str})
+        with open(root_path + '/' + type_str + '-Set.cue', 'w', encoding='utf-8-sig') as f:
+            f.writelines("%s\n" % l for l in prefix)
+            for song in meta_parser.assign_new_track_id(table[type_str].values()):
+                f.writelines("%s\n" % l for l in song.to_cue_item())
 
 def run(wiki_path, root_path):
-    print('Enter Type-A')
+    print('Enter Type-C')
     print('Loading wikipedia...')
     meta = load_wikipedia(wiki_path)
     print('Deal with all files...')

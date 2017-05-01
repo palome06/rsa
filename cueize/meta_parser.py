@@ -37,3 +37,6 @@ def normalize(text):
 
 def purge_line(line):
     return re.sub('\[注 \d+\]', '', line)
+
+def get_other_disc_type():
+    return ['劇場盤', '剧场盘', '通常盤', '通常盘', 'NGT48 CD盤', 'セブン-イレブン限定盤']

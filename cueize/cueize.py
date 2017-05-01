@@ -3,6 +3,7 @@ import getopt
 from song import Song
 import type_a
 import type_b
+import type_c
 
 if __name__ == '__main__':
     try:
@@ -26,6 +27,8 @@ if __name__ == '__main__':
         type_a.run(wiki_path=wiki_path, root_path=root_path)
     elif job_type == 'B':
         type_b.run(wiki_path=wiki_path, root_path=root_path)
+    elif job_type == 'C':
+        type_c.run(wiki_path=wiki_path, root_path=root_path)
     # deal_with_all_files_type_b(r'D:\PlatWorld\STDownloads\Baidu\2nd Album - 革命の丘')
 
 # load format: single format, album format threater format
