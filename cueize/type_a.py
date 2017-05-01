@@ -1,10 +1,10 @@
 from song import Song
 import meta_parser
+import re
 
 table={}
 
 def handle_with_line(thetype, line):
-    import re
     if thetype == None:
         return
     with_performer = True
@@ -48,8 +48,21 @@ def load_wikipedia(filename):
         will_read = False
         thetype = None
         first_line = True
+        mode = 'meta_mode'
+        patch_song = None
         for line in content:
-            if not will_read:
+            if line == '':
+                continue
+            elif line.startswith('シングル収録トラック'):
+                mode = 'track_mode'
+                will_read = False
+                continue
+            elif line.startswith('選抜メンバー'):
+                mode = 'unit_mode'
+                will_read = False
+                continue
+
+            if mode == 'meta_mode':
                 if first_line:
                     first_line, album = meta_parser.parse_album(line)
                     meta['title'] = album
@@ -57,15 +70,31 @@ def load_wikipedia(filename):
                     meta['date'] = meta_parser.parse_release_date(line)
                 elif line.endswith('の シングル'):
                     meta['performer'] = meta_parser.parse_performer(line, 'シングル')
-            if line.startswith('Type') or line in ['劇場盤', '剧场盘', '通常盤', '通常盘' 'NGT48 CD盤']:
-                thetype = line
-            elif line.startswith('CD'):
-                will_read = True
-            elif line.startswith('DVD'):
-                will_read = False
-            else:
-                if will_read:
-                    handle_with_line(thetype, meta_parser.purge_line(line))
+            elif mode == 'track_mode':
+                if line.startswith('Type') or line in ['劇場盤', '剧场盘', '通常盤', '通常盘' 'NGT48 CD盤']:
+                    thetype = line
+                elif line.startswith('CD'):
+                    will_read = True
+                elif line.startswith('DVD'):
+                    will_read = False
+                else:
+                    if will_read:
+                        handle_with_line(thetype, meta_parser.purge_line(line))
+            elif mode == 'unit_mode':
+                line = re.sub('\[[\s\w]+\]', '', line)
+                nline = meta_parser.normalize(line)
+                if (nline, False) in table:
+                    will_read = True
+                    patch_song = table[(nline, False)]
+                elif will_read and patch_song and (not patch_song.performer or patch_song.performer == ''):
+                    match = re.compile(r'（ユニット：([^）]+)）.*').match(line)
+                    will_read = False
+                    if match:
+                        patch_song.performer = match.group(1)
+                    elif line.find('、') < 0 and line.find('：') < 0:
+                        patch_song.performer = line
+                    else:
+                        will_read = True
     return meta
 
 def deal_with_all_files(root_path):
