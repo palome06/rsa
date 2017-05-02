@@ -20,7 +20,7 @@ def handle_with_line(thetype, line):
     is_off_vocal = False
     if title.lower().find("off vocal") >= 0:
         is_off_vocal = True
-        title = re.sub('\s*[(（]?off vocal ver(\.)?[)）]?\s*$', '', title)
+        title = re.sub('\s*[\-(（]?off vocal ver(\.)?[)）\-]?\s*$', '', title)
     song = Song(track_id, title, performer, is_off_vocal, length)
     song.thetype = thetype
     pair = (meta_parser.normalize(title), is_off_vocal)
@@ -105,7 +105,7 @@ def deal_with_all_files(root_path):
             continue
         for file in files:
             fn = meta_parser.normalize(file)
-            is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off-vocal', 'instrument', 'music'])
+            is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off cocal', 'off-vocal', 'instrument', 'music'])
             if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
             for (keyname, keyoff) in table[type_str].keys():

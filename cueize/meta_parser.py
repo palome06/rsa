@@ -30,10 +30,13 @@ def get_prefix(meta, others=None):
     title = meta['title'] + ('' if others is None or 'type_str' not in others else ('[%s]' % others['type_str']))
     return ['REM DATE %s' % meta['date'], 'PERFORMER "%s"' % meta['performer'], 'TITLE "%s"' % title]
 
-def normalize(text):
+def normalize_with_space(text):
     o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ'
     n_s = '0123456789ABDEGHJKMNSTU'
-    return text.translate(str.maketrans(o_s, n_s, '　 ？?！!·…'))
+    return text.translate(str.maketrans(o_s, n_s, '？?！!·…。'))
+
+def normalize(text):
+    return normalize_with_space(text).translate(str.maketrans('', '', '　 '))
 
 def purge_line(line):
     return re.sub('\[注 \d+\]', '', line)
