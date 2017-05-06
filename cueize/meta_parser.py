@@ -19,7 +19,7 @@ def parse_disc_no(line):
 
 def assign_new_track_id(collection):
     songs = sorted(collection, key=lambda song: (song.is_off_vocal, 
-        song.thetype if song.thetype.startswith('Type') else '劇場盤', song.track_id))
+        song.thetype if song.thetype.startswith('Type') else ('Z' + song.thetype), song.track_id))
     idx = 1
     for song in songs:
         song.index = idx
@@ -31,8 +31,8 @@ def get_prefix(meta, others=None):
     return ['REM DATE %s' % meta['date'], 'PERFORMER "%s"' % meta['performer'], 'TITLE "%s"' % title]
 
 def normalize_with_space(text):
-    o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ'
-    n_s = '0123456789ABDEGHJKMNSTU'
+    o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ〜～'
+    n_s = '0123456789ABDEGHJKMNSTU~~'
     return text.translate(str.maketrans(o_s, n_s, '？?！!·…。'))
 
 def normalize(text):
@@ -42,4 +42,4 @@ def purge_line(line):
     return re.sub('\[注 \d+\]', '', line)
 
 def get_other_disc_type():
-    return ['劇場盤', '剧场盘', '通常盤', '通常盘', 'NGT48 CD盤', 'セブン-イレブン限定盤']
+    return ['劇場盤', '剧场盘', '通常盤', '通常盘', 'NGT48 CD盤', 'セブン-イレブン限定盤', 'アニメ盤']

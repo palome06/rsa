@@ -71,7 +71,7 @@ def load_wikipedia(filename):
                 elif line.endswith('の シングル'):
                     meta['performer'] = meta_parser.parse_performer(line, 'シングル')
             elif mode == 'track_mode':
-                if line.startswith('Type') or line in ['劇場盤', '剧场盘', '通常盤', '通常盘', 'NGT48 CD盤', 'セブン-イレブン限定盤']:
+                if line.startswith('Type') or line in meta_parser.get_other_disc_type():
                     thetype = line
                 elif line.startswith('CD'):
                     will_read = True
@@ -100,14 +100,16 @@ def load_wikipedia(filename):
 def deal_with_all_files(root_path):
     import os
     for root, dirs, files in os.walk(root_path):
+        rel_path_str = root[(len(root_path) + 1):]
         for file in files:
             fn = meta_parser.normalize(file)
             is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off-vocal', 'instrument', 'music'])
             if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
-            for (keyname, keyoff) in table.keys():
+            for ((keyname, keyoff), song) in table.items():
                 if fn.find(keyname) >= 0 and keyoff == is_off_vocal:
-                    table[(keyname, keyoff)].set_file(file)
+                    if not song.pure_filename or len(song.pure_filename) > len(file):
+                        song.set_file(rel_path_str, file)
 
 def write_cue(root_path, meta):
     import os

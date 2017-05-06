@@ -83,9 +83,10 @@ def deal_with_all_files(root_path):
             fn = meta_parser.normalize(file)            
             if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
-            for keyname, keyvalue in table[type_str].items():
+            for keyname, song in table[type_str].items():
                 if (fn.find(keyname) >= 0):
-                    keyvalue.set_file(rel_path_str + '\\' + file)
+                    if not song.pure_filename or len(song.pure_filename) > len(file):
+                        song.set_file(rel_path_str, file)
 
 def write_cue(root_path, meta):
     import os

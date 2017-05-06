@@ -5,6 +5,7 @@ class Song:
         self.performer = performer
         self.is_off_vocal = is_off_vocal
         self.file = None
+        self.pure_filename = None
         self.thetype = None
         self.voice_type = None
         self.index = None
@@ -15,8 +16,9 @@ class Song:
         print(self.thetype, '-', self.track_id, '# ', self.title, 'off vocal ver.' if self.is_off_vocal else '',\
             ' //', self.performer, ' (', self.length, ') @ ', self.file)
 
-    def set_file(self, filename):
-        self.file = filename
+    def set_file(self, root, filename):
+        self.pure_filename = filename
+        self.file = filename if root == '' else (root + '\\' + filename)
         if self.file.endswith('.flac') or self.file.endswith('.FLAC'):
             self.voice_type = 'FLAC'
         else:

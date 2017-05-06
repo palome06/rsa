@@ -108,9 +108,10 @@ def deal_with_all_files(root_path):
             is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off cocal', 'off-vocal', 'instrument', 'music'])
             if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
-            for (keyname, keyoff) in table[type_str].keys():
-               if fn.find(keyname) >= 0 and keyoff == is_off_vocal:
-                    table[type_str][(keyname, keyoff)].set_file(rel_path_str + '\\' + file)
+            for ((keyname, keyoff), song) in table[type_str].items():
+                if fn.find(keyname) >= 0 and keyoff == is_off_vocal:
+                    if not song.pure_filename or len(song.pure_filename) > len(file):
+                        song.set_file(rel_path_str, file)
 
 def write_cue(root_path, meta):
     import os
