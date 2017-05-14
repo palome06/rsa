@@ -95,10 +95,10 @@ def deal_with_all_files(root_path):
         if len(rel_path_str) == 0 or rel_path_str.find('\\') >= 0:
             continue
         rel_type_str = rel_path_str
-        if rel_type_str.startswith('Type'):
-            type_str = 'Type-' + rel_type_str[len('Type-'):]
-        elif rel_type_str in meta_parser.get_other_disc_type():
-            type_str = rel_type_str
+        if 'Type' in rel_type_str:
+            type_str = 'Type-' + rel_type_str[rel_type_str.find('Type') + 5]
+        elif any(disc_cd in rel_type_str for disc_cd in meta_parser.get_other_disc_type()):
+            type_str = next(disc_cd for disc_cd in meta_parser.get_other_disc_type() if disc_cd in rel_type_str)
         else:
             continue
         if type_str not in table:

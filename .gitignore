@@ -1,3 +1,5 @@
 __pycache__
-.pyc
+*.pyc
 wikipedia.txt
+*.Q
+my_*.py
