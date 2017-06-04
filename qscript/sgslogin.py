@@ -178,7 +178,25 @@ LeftClick 1
 '''
 
 def run_fuck1(f, username, backspace, password, keep=True):
-    f.write(into_server(remeber=False))
+    f.write(into_server(remeber=True))
+    if keep:
+        f.write(keep_input_block())
+    f.writelines("%s\n" % l for l in a_account(username, backspace, password))
+    f.write(enter_mode())
+    f.write(close_pad())
+    #f.write(message())
+    f.write(commu())
+    f.write(open_pad())
+    f.write(click_commu_task(7))
+    f.write(click_item(5, 0))
+    # f.write(click_item(4, 1))
+    # f.write(click_item(5, 7))
+    # f.write(click_item(5, 9))
+    f.write(close_pad())
+    f.writelines("%s\n" % l for l in a_close_page(4))
+
+def run_monday_fuck1(f, username, backspace, password, keep=True):
+    f.write(into_server(remeber=True))
     if keep:
         f.write(keep_input_block())
     f.writelines("%s\n" % l for l in a_account(username, backspace, password))
@@ -187,6 +205,9 @@ def run_fuck1(f, username, backspace, password, keep=True):
     f.write(commu())
     f.write(open_pad())
     f.write(click_commu_task(5))
+    f.write(click_item(3, 1))
+    f.write(close_pad())
+    f.write(open_pad())
     f.write(click_item(3, 0))
     f.write(click_item(3, 11))
     f.write(close_pad())
@@ -195,11 +216,11 @@ def run_fuck1(f, username, backspace, password, keep=True):
 '''
 call this funciton in mysgslogin.py
 '''
-def write_down(list):
+def write_down(list, run_type):
     with open('sgsrsa.Q', 'w', encoding='utf-8-sig') as f:
         f.write(header())
         for item in list:
             if len(item) > 3:
-                run_fuck1(f, username=item[0], backspace=item[1], password=item[2], keep=item[3])
+                run_type(f, username=item[0], backspace=item[1], password=item[2], keep=item[3])
             else:
-                run_fuck1(f, username=item[0], backspace=item[1], password=item[2])
+                run_type(f, username=item[0], backspace=item[1], password=item[2])

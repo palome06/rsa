@@ -9,6 +9,10 @@ def parse_release_date(line):
     match = re.compile(r'^リリース\s*(\d+)年(\d+)月(\d+)日$').match(line)
     return '%d.%02d.%02d' % (int(match.group(1)), int(match.group(2)), int(match.group(3))) if match else ''
 
+def parse_date(line):
+    match = re.compile(r'^(\d+)年(\d+)月(\d+)日$').match(line)
+    return '%d.%02d.%02d' % (int(match.group(1)), int(match.group(2)), int(match.group(3))) if match else ''
+
 def parse_performer(line, terminal):
     match = re.compile(r'^(.*) の ' + terminal).match(line)
     return match.group(1) if match else ''
@@ -33,10 +37,10 @@ def get_prefix(meta, others=None):
 def normalize_with_space(text):
     o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ〜～'
     n_s = '0123456789ABDEGHJKMNSTU~~'
-    return text.translate(str.maketrans(o_s, n_s, '？?！!·…。'))
+    return text.translate(str.maketrans(o_s, n_s, '？?！!·…。“”\xa0'))
 
 def normalize(text):
-    return normalize_with_space(text).translate(str.maketrans('', '', '　 '))
+    return normalize_with_space(text).translate(str.maketrans('', '', '　 \u3000'))
 
 def purge_line(line):
     return re.sub('\[注 \d+\]', '', line)
