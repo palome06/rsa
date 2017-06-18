@@ -177,8 +177,22 @@ Delay 698
 LeftClick 1
 '''
 
+def select_item(index, total):
+    if total % 2 == 1:
+        offset = int(-75 * (int(total / 2) - index))
+    else:
+        offset = int(-75 * (total / 2 - 0.5 - index))
+    return '''
+MoveTo {0}, 486
+Delay 405
+LeftClick 1
+MoveTo 954, 558
+Dealy 504
+LeftClick 1
+'''.format(958 + offset)
+
 def run_fuck1(f, username, backspace, password, keep=True):
-    f.write(into_server(remeber=True))
+    f.write(into_server(remeber=False))
     if keep:
         f.write(keep_input_block())
     f.writelines("%s\n" % l for l in a_account(username, backspace, password))
@@ -187,11 +201,13 @@ def run_fuck1(f, username, backspace, password, keep=True):
     #f.write(message())
     f.write(commu())
     f.write(open_pad())
-    f.write(click_commu_task(7))
-    f.write(click_item(5, 0))
+    f.write(click_commu_task(6))
+    # f.write(click_item(4, 0))
     # f.write(click_item(4, 1))
-    # f.write(click_item(5, 7))
-    # f.write(click_item(5, 9))
+    f.write(click_item(4, 0))
+    f.write(click_item(4, 9))
+    f.write(click_item(4, 8))
+    f.write(select_item(0, 3))
     f.write(close_pad())
     f.writelines("%s\n" % l for l in a_close_page(4))
 

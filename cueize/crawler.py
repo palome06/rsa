@@ -133,13 +133,14 @@ def load_from_wiki_template(album_title):
 
 if __name__ == '__main__':
     title = sys.argv[1]
+    path = sys.argv[2] if len(sys.argv) > 2 else '.'
     print('Loading wikipedia...')
     album = load_from_wiki_template(title)
     type_a.table = table
-    print('Deal with all files...')
-    type_a.deal_with_all_files('.')
+    print('Deal with all files in ({0})...'.format(path))
+    type_a.deal_with_all_files(path)
     print('Writing cue...')
-    type_a.write_cue(root_path='.', meta={'title':title, 'date':album.publish_date, 'performer':album.group})
+    type_a.write_cue(root_path=path, meta={'title':title, 'date':album.publish_date, 'performer':album.group, 'single_id':album.track_id})
 
 # print soup.prettify()
 # cout(raw)

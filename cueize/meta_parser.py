@@ -32,6 +32,8 @@ def assign_new_track_id(collection):
 
 def get_prefix(meta, others=None):
     title = meta['title'] + ('' if others is None or 'type_str' not in others else ('[%s]' % others['type_str']))
+    if 'single_id' in meta:
+        title = get_order(meta['single_id']) + ' ' + title
     return ['REM DATE %s' % meta['date'], 'PERFORMER "%s"' % meta['performer'], 'TITLE "%s"' % title]
 
 def normalize_with_space(text):
@@ -47,3 +49,17 @@ def purge_line(line):
 
 def get_other_disc_type():
     return ['劇場盤', '剧场盘', '通常盤', '通常盘', 'NGT48 CD盤', 'セブン-イレブン限定盤', 'アニメ盤']
+
+def get_order(single_id):
+    surfix = ''
+    if single_id % 100 >= 11 and single_id % 100 <= 13:
+        surfix = 'th'
+    elif single_id % 10 == 1:
+        surfix = 'st'
+    elif single_id % 10 == 2:
+        surfix = 'nd'
+    elif single_id % 10 == 3:
+        surfix = 'rd'
+    else:
+        surfix = 'th'
+    return '%d%s' % (single_id, surfix)

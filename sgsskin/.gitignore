@@ -1,0 +1,10 @@
+__pycache__
+*.pyc
+wikipedia.txt
+*.Q
+my_*.py
+
+# image
+*.png
+*.jpg
+*.jpeg
