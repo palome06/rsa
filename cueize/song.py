@@ -1,6 +1,6 @@
 class Song:
     def __init__(self, track_id, title, performer, is_off_vocal, length):
-        self.track_id = track_id
+        self.track_id = int(track_id)
         self.title = title
         self.performer = performer
         self.is_off_vocal = is_off_vocal

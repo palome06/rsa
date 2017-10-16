@@ -102,7 +102,7 @@ def crawl_page(single):
                         is_off_vocal = True
                         title = re.sub('\s*[\-(（]?off vocal ver(\.)?[\-)）]?\s*$', '', title)
                     # author[2],composer[3],combiner[4]
-                    length_match = re.compile(r'(?P<length>\d+:\d+)').match(tds[5].text)
+                    length_match = re.compile(r'(?P<length>\d+:\d+)').match(tds[5].text) if len(tds) > 5 else None
                     length = length_match.group('length') if length_match else '00:00:00'
                     song = Song(track_id, title, performer, is_off_vocal, length)
                     song.thetype = thetype
@@ -122,7 +122,7 @@ def load_from_wiki_template(album_title):
 
         tables = rp.find_all(class_='nowraplinks hlist hlist-pipe collapsible collapsed navbox-subgroup')
         for table in tables:
-            if table.span.string == 'CD作品':
+            if table.span.string == 'CD作品' or table.span.string == '作品':
                 single_table = go_on_with_table(table)
                 if album_title in single_table:
                     single_table[album_title].group = group

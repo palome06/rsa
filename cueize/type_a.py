@@ -53,7 +53,7 @@ def load_wikipedia(filename):
         for line in content:
             if line == '':
                 continue
-            elif line.startswith('シングル収録トラック'):
+            elif line.startswith('シングル収録トラック') or line.startswith('収録トラック'):
                 mode = 'track_mode'
                 will_read = False
                 continue
@@ -70,8 +70,12 @@ def load_wikipedia(filename):
                     meta['date'] = meta_parser.parse_release_date(line)
                 elif line.endswith('の シングル'):
                     meta['performer'] = meta_parser.parse_performer(line, 'シングル')
+                elif line.endswith('アルバム'):
+                    meta['performer'] = meta_parser.parse_performer(line, 'スタジオ・アルバム')
             elif mode == 'track_mode':
                 if line.startswith('Type') or line in meta_parser.get_other_disc_type():
+                    thetype = line
+                elif line.startswith('DISC'):
                     thetype = line
                 elif line.startswith('CD'):
                     will_read = True

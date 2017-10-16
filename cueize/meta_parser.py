@@ -37,8 +37,8 @@ def get_prefix(meta, others=None):
     return ['REM DATE %s' % meta['date'], 'PERFORMER "%s"' % meta['performer'], 'TITLE "%s"' % title]
 
 def normalize_with_space(text):
-    o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ〜～'
-    n_s = '0123456789ABDEGHJKMNSTU~~'
+    o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ〜～：／'
+    n_s = '0123456789ABDEGHJKMNSTU~~:/'
     return text.translate(str.maketrans(o_s, n_s, '？?！!·…。“”\xa0'))
 
 def normalize(text):
