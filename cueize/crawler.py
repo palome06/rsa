@@ -8,7 +8,10 @@ import re
 
 import type_a
 
-groups = ['AKB48', 'SKE48', 'NMB48', 'HKT48', 'NGT48', 'STU48', '乃木坂46', '欅坂46']
+groups = ['AKB48', 'SKE48', 'NMB48', 'HKT48', 'NGT48',
+          '%e4%b9%83%e6%9c%a8%e5%9d%82%34%36',# 乃木坂46
+          '%e6%ac%85%e5%9d%82%34%36', # 欅坂46
+          'STU48']
 wiki_base = 'https://ja.wikipedia.org'
 menu_base = wiki_base + '/wiki/Template:'
 # def load_web(url):
@@ -44,7 +47,9 @@ def go_on_with_table(table):
     single_table = {}
     for li_elem in li_all:
         if len(li_elem.contents) == 2:
-            track_str = li_elem.contents[0][:-1]
+            track_str = li_elem.contents[0].strip()
+            if track_str.endswith('.'):
+                track_str = track_str[:-1]
             track_id = int(track_str) if track_str.isdigit() else -1
             node = li_elem.contents[1]
         elif len(li_elem.contents) == 1:
@@ -100,7 +105,7 @@ def crawl_page(single):
                     is_off_vocal = False
                     if title.lower().find("off vocal") >= 0:
                         is_off_vocal = True
-                        title = re.sub('\s*[\-(（]?off vocal ver(\.)?[\-)）]?\s*$', '', title)
+                        title = re.sub('\s*[\-(（～]?off vocal ver(\.)?[\-)）～]?\s*$', '', title)
                     # author[2],composer[3],combiner[4]
                     length_match = re.compile(r'(?P<length>\d+:\d+)').match(tds[5].text) if len(tds) > 5 else None
                     length = length_match.group('length') if length_match else '00:00:00'
@@ -120,15 +125,34 @@ def load_from_wiki_template(album_title):
         raw = urllib.request.urlopen(url).read().decode('utf-8')
         rp = BeautifulSoup(raw, 'html.parser')
 
+        group_name = rp.find_all(class_='firstHeading')[0].string
+        if group_name.startswith('Template:'):
+            group_name = group_name[(group_name.find(':') + 1):]
+        else:
+            group_name = group
+        # 48 style
         tables = rp.find_all(class_='nowraplinks hlist hlist-pipe collapsible collapsed navbox-subgroup')
         for table in tables:
             if table.span.string == 'CD作品' or table.span.string == '作品':
                 single_table = go_on_with_table(table)
                 if album_title in single_table:
-                    single_table[album_title].group = group
+                    group_name = rp.find_all(class_='navbox-title')[0].span.string
+                    single_table[album_title].group = group_name
                     if crawl_page(single_table[album_title]):
                         return single_table[album_title]
                 break
+
+        # 46 style
+        tables = rp.find_all(class_='nowraplinks hlist navbox-subgroup')
+        for table in tables:
+            if table.td.string == 'シングル' or table.td.string == 'アルバム':
+                single_table = go_on_with_table(table)
+                if album_title in single_table:
+                    single_table[album_title].group = group_name
+                    if crawl_page(single_table[album_title]):
+                        return single_table[album_title]
+                break
+
     return None
 
 if __name__ == '__main__':
