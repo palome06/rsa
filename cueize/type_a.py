@@ -107,7 +107,7 @@ def deal_with_all_files(root_path):
         rel_path_str = root[(len(root_path) + 1):]
         for file in files:
             fn = meta_parser.normalize(file)
-            is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off-vocal', 'instrument', 'music'])
+            is_off_vocal = any(word in file.lower() for word in ['off vocal', 'off-vocal', 'instrument', 'music', 'instrumental'])
             if not any(fn.endswith(suffix) for suffix in ['.wav', '.mp3', '.flac', '.ape', '.m4a']):
                 continue
             for ((keyname, keyoff), song) in table.items():

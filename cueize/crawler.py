@@ -105,7 +105,10 @@ def crawl_page(single):
                     is_off_vocal = False
                     if title.lower().find("off vocal") >= 0:
                         is_off_vocal = True
-                        title = re.sub('\s*[\-(（～]?off vocal ver(\.)?[\-)）～]?\s*$', '', title)
+                        title = re.sub('\s*[\-(（～]?[Oo]ff vocal ver(\.)?[\-)）～]?\s*$', '', title)
+                    elif title.lower().find("instrumental") >= 0:
+                        is_off_vocal = True
+                        title = re.sub('\s*[\-(（～]?[Ii]nstrumental[\-)）～]?\s*$', '', title)
                     # author[2],composer[3],combiner[4]
                     length_match = re.compile(r'(?P<length>\d+:\d+)').match(tds[5].text) if len(tds) > 5 else None
                     length = length_match.group('length') if length_match else '00:00:00'
@@ -125,7 +128,7 @@ def load_from_wiki_template(album_title):
         raw = urllib.request.urlopen(url).read().decode('utf-8')
         rp = BeautifulSoup(raw, 'html.parser')
 
-        group_name = rp.find_all(class_='firstHeading')[0].string
+        group_name = rp.find_all('h1', { 'class' : 'firstHeading' })[0].string
         if group_name.startswith('Template:'):
             group_name = group_name[(group_name.find(':') + 1):]
         else:
@@ -136,14 +139,15 @@ def load_from_wiki_template(album_title):
             if table.span.string == 'CD作品' or table.span.string == '作品':
                 single_table = go_on_with_table(table)
                 if album_title in single_table:
-                    group_name = rp.find_all(class_='navbox-title')[0].span.string
+                    # currently the header might not be accurate
+                    # group_name = rp.find_all(class_='navbox-title')[0].span.string 
                     single_table[album_title].group = group_name
                     if crawl_page(single_table[album_title]):
                         return single_table[album_title]
                 break
 
         # 46 style
-        tables = rp.find_all(class_='nowraplinks hlist navbox-subgroup')
+        tables = rp.find_all(class_='nowraplinks navbox-subgroup')
         for table in tables:
             if table.td.string == 'シングル' or table.td.string == 'アルバム':
                 single_table = go_on_with_table(table)
@@ -155,8 +159,21 @@ def load_from_wiki_template(album_title):
 
     return None
 
+def prepare(proxy):
+    '''
+    setup proxy to access wikipedia, fuck China, GFW and Xitler
+    '''
+    if proxy:
+        # create the object, assign it to a variable
+        proxySide = urllib.request.ProxyHandler({'https': proxy})
+        # construct a new opener using your proxy settings
+        opener = urllib.request.build_opener(proxySide)
+        # install the openen on the module-level
+        urllib.request.install_opener(opener)
+
 if __name__ == '__main__':
-    title = sys.argv[1]
+    prepare('http://127.0.0.1:8084')
+    title = meta_parser.normalize_full_width(sys.argv[1])
     path = sys.argv[2] if len(sys.argv) > 2 else '.'
     print('Loading wikipedia...')
     album = load_from_wiki_template(title)

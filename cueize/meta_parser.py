@@ -41,6 +41,11 @@ def normalize_with_space(text):
     n_s = '0123456789ABDEGHJKMNSTU~~:/'
     return text.translate(str.maketrans(o_s, n_s, '？?！!·…。“”\xa0'))
 
+def normalize_full_width(text):    
+    o_s = '０１２３４５６７８９ＡＢＤＥＧＨＪＫＭＮＳＴＵ〜～：／？！＃'
+    n_s = '0123456789ABDEGHJKMNSTU~~:/?!#'
+    return text.translate(str.maketrans(o_s, n_s))
+
 def normalize(text):
     return normalize_with_space(text).translate(str.maketrans('', '', '　 \u3000'))
 
