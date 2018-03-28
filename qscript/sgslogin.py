@@ -31,11 +31,11 @@ SetupOCXFile=
 def into_server(remeber):
     return '''
 MoveTo 951, {0}
-Delay 1485
+Delay 2085
 LeftDoubleClick 1
 Delay 101
 MoveTo 951, 484
-Delay 1852
+Delay 1552
 LeftClick 1
 Delay 700
 '''.format(476 if remeber else 550)
@@ -86,17 +86,33 @@ def a_account(username,backspace,password,ie=True):
     results.append('KeyDown "Enter", 1')
     results.append('Delay 70')
     results.append('KeyUp "Enter", 1')
-    results.append('Delay 900')
+    results.append('Delay 800')
     return results
 
 def enter_mode():
     return '''
 MoveTo 822, 560
-Delay 3164
+Delay 2064
 LeftClick 1
 MoveTo 978, 740
 Delay 1079
 LeftClick 1
+'''
+
+def signin():
+    return '''
+MoveTo 1012, 632
+Delay 587
+LeftClick 1
+Delay 48
+'''
+
+def close_upsell():
+    return '''
+MoveTo 1417, 272
+Delay 602
+LeftClick 1
+Delay 88
 '''
 
 def close_pad():
@@ -119,7 +135,7 @@ def a_close_page(time=1):
 def commu():
     return '''
 MoveTo 1216, 817
-Delay 655
+Delay 1155
 LeftClick 1
 MoveTo 870, 772
 Delay 491
@@ -151,10 +167,10 @@ Delay 711
 LeftClick 1
 '''.format(317 + pad_index * 50)
 
-def click_item(pad_index, menu_index):
+def click_item(pad_index, menu_index, block_count=0):
     return '''
 MoveTo 536, {0}
-Delay 691
+Delay 991
 LeftClick 1
 MoveTo 673, {1}
 Delay 640
@@ -162,18 +178,44 @@ LeftClick 1
 MoveTo 1096, 766
 Delay 698
 LeftClick 1
-'''.format(317 + pad_index * 50, 444 + menu_index * 31)
+'''.format(317 + pad_index * 50, 444 + menu_index * 31 + block_count * 36)
+
+def accept_and_click_item(pad_index, menu_index, block_count, times):
+    part1 = '''
+MoveTo 536, {0}
+Delay 991
+LeftClick 1
+MoveTo 673, {1}
+Delay 640
+LeftClick 1
+'''.format(317 + pad_index * 50, 444 + menu_index * 31 + block_count * 36)
+    part2 = '''
+MoveTo 1096, 766
+Delay 698
+LeftClick 1
+MoveTo 1111, 769
+Delay 798
+LeftClick 1
+MoveTo 994, 600
+Delay 398
+LeftClick 1
+Delay 598
+LeftClick 1
+''' # maybe 1083, 387' double click to fuck the award
+    for i in range(0, times):
+        part1 = part1 + part2
+    return part1
 
 def message():
     return '''
 MoveTo 1370, 820
-Delay 701
+Delay 501
 LeftClick 1
 MoveTo 877, 385
-Delay 640
+Delay 1340
 LeftClick 1
-MoveTo 1080, 710
-Delay 698
+MoveTo 1011, 710
+Delay 598
 LeftClick 1
 '''
 
@@ -191,23 +233,31 @@ Dealy 504
 LeftClick 1
 '''.format(958 + offset)
 
-def run_fuck1(f, username, backspace, password, keep=True):
-    f.write(into_server(remeber=False))
+def run_fuck1(f, username, backspace, password, auto_signin=True, keep=True):
+    item_pos = 5
+    f.write(into_server(remeber=True))
     if keep:
         f.write(keep_input_block())
     f.writelines("%s\n" % l for l in a_account(username, backspace, password))
     f.write(enter_mode())
+    f.write(close_upsell())
+    if auto_signin:
+        f.write(signin())
     f.write(close_pad())
-    #f.write(message())
     f.write(commu())
+    # f.write(message())
     f.write(open_pad())
-    f.write(click_commu_task(6))
-    # f.write(click_item(4, 0))
-    # f.write(click_item(4, 1))
-    f.write(click_item(4, 0))
-    f.write(click_item(4, 9))
-    f.write(click_item(4, 8))
-    f.write(select_item(0, 3))
+    # f.write(click_item(item_pos, 2))
+    f.write(click_commu_task(item_pos + 2))
+    # f.write(click_item(item_pos - 1, 0, block_count=1))
+    f.write(click_item(item_pos, 0, block_count=1))
+    # f.write(accept_and_click_item(item_pos - 1, 8, block_count=2, times=7))
+    # f.write(click_item(5, 0))
+    # f.write(click_item(5, 0))
+    # f.write(click_item(item_pos, 0, block_count=1))
+    # f.write(click_item(4, 9))
+    # f.write(click_item(4, 8))
+    # f.write(select_item(0, 3))
     f.write(close_pad())
     f.writelines("%s\n" % l for l in a_close_page(4))
 
@@ -236,7 +286,9 @@ def write_down(list, run_type):
     with open('sgsrsa.Q', 'w', encoding='utf-8-sig') as f:
         f.write(header())
         for item in list:
-            if len(item) > 3:
-                run_type(f, username=item[0], backspace=item[1], password=item[2], keep=item[3])
+            if len(item) > 4:
+                run_type(f, username=item[0], backspace=item[1], password=item[2], auto_signin=item[3], keep=item[3])
+            elif len(item) > 3:
+                run_type(f, username=item[0], backspace=item[1], password=item[2], auto_signin=item[3])
             else:
                 run_type(f, username=item[0], backspace=item[1], password=item[2])

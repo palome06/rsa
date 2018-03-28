@@ -53,7 +53,7 @@ def load_wikipedia(filename):
         for line in content:
             if line == '':
                 continue
-            elif line.startswith('シングル収録トラック') or line.startswith('収録トラック'):
+            if line.startswith('シングル収録トラック') or line.startswith('収録トラック'):
                 mode = 'track_mode'
                 will_read = False
                 continue
@@ -73,7 +73,9 @@ def load_wikipedia(filename):
                 elif line.endswith('アルバム'):
                     meta['performer'] = meta_parser.parse_performer(line, 'スタジオ・アルバム')
             elif mode == 'track_mode':
-                if line.startswith('Type') or line in meta_parser.get_other_disc_type():
+                if line.startswith('通常盤 Type'): # NMB-17th
+                    thetype = line[4:]
+                elif line.startswith('Type') or line in meta_parser.get_other_disc_type():
                     thetype = line
                 elif line.startswith('DISC'):
                     thetype = line

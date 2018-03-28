@@ -83,9 +83,14 @@ def crawl_page(single):
         if isinstance(h3, NavigableString):
             continue
         if h3.name == 'h3':
-            type_text = str(h3.span.string)
-            if type_text.startswith('Type') or type_text in meta_parser.get_other_disc_type():
-                thetype = type_text
+            for h3_child in h3.findChildren():
+                if h3_child.name == 'span':
+                    type_text = str(h3_child.string)
+                    if type_text.startswith('通常盤 Type'): # NMB-17th
+                        type_text = type_text[4:]
+                    if type_text.startswith('Type') or type_text in meta_parser.get_other_disc_type():
+                        thetype = type_text
+                        break
         elif h3.name == 'table' and h3.has_attr('class') and (h3['class'] == 'tracklist' or h3['class'] == ['tracklist']): 
             caption = h3.find('caption').text
             if not caption.startswith('CD'):
@@ -105,10 +110,10 @@ def crawl_page(single):
                     is_off_vocal = False
                     if title.lower().find("off vocal") >= 0:
                         is_off_vocal = True
-                        title = re.sub('\s*[\-(（～]?[Oo]ff vocal ver(\.)?[\-)）～]?\s*$', '', title)
+                        title = re.sub('\s*[\-(（～]?\s?[Oo]ff vocal ver(\.)?[\-)）～]?\s*$', '', title)
                     elif title.lower().find("instrumental") >= 0:
                         is_off_vocal = True
-                        title = re.sub('\s*[\-(（～]?[Ii]nstrumental[\-)）～]?\s*$', '', title)
+                        title = re.sub('\s*[\-(（～]?\s?[Ii]nstrumental[\-)）～]?\s*$', '', title)
                     # author[2],composer[3],combiner[4]
                     length_match = re.compile(r'(?P<length>\d+:\d+)').match(tds[5].text) if len(tds) > 5 else None
                     length = length_match.group('length') if length_match else '00:00:00'
@@ -172,6 +177,9 @@ def prepare(proxy):
         urllib.request.install_opener(opener)
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print('crawler.py title path')
+        exit(0)
     prepare('http://127.0.0.1:8084')
     title = meta_parser.normalize_full_width(sys.argv[1])
     path = sys.argv[2] if len(sys.argv) > 2 else '.'
