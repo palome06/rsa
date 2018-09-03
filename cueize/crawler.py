@@ -154,7 +154,9 @@ def load_from_wiki_template(album_title):
         # 46 style
         tables = rp.find_all(class_='nowraplinks navbox-subgroup')
         for table in tables:
-            if table.td.string == 'シングル' or table.td.string == 'アルバム':
+            # wired characters like <span class="nowrap">\xa0\xa0\xa0\xa0\xa0\xa0</span>欅坂46</td> </t>
+            # if table.td.string == 'シングル' or table.td.string == 'アルバム':
+            if '>シングル</td>' in str(table.td) or '>アルバム</td>' in str(table.td):
                 single_table = go_on_with_table(table)
                 if album_title in single_table:
                     single_table[album_title].group = group_name

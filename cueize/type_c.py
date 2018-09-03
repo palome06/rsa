@@ -1,3 +1,4 @@
+# songs in different directory
 from song import Song
 import meta_parser
 import re

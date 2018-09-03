@@ -1,3 +1,4 @@
+# album
 from song import Song
 import meta_parser
 import re
@@ -56,7 +57,7 @@ def handle_with_line_standard(thetype, line):
     performer = match.group('performer')
     length = match.group('length')
     is_off_vocal = False
-    print(line, 't', track_id, 'ti', title, 'p', performer, 'l', length, 'o', is_off_vocal)
+    # print(line, 't', track_id, 'ti', title, 'p', performer, 'l', length, 'o', is_off_vocal)
     if title.lower().find("off vocal") >= 0:
         is_off_vocal = True
         title = re.sub('\s*[\-(（]?off vocal ver(\.)?[\-)）]?\s*$', '', title)

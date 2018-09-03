@@ -132,11 +132,19 @@ def a_close_page(time=1):
         results.append('Delay 88')
     return results
 
-def commu():
+def commu(will_close_last_week=False):
+    close_last_week=''
+    if will_close_last_week:
+        close_last_week='''
+MoveTo 959, 595
+Delay 1471
+LeftClick 1
+LeftClick 1
+'''
     return '''
 MoveTo 1216, 817
 Delay 1155
-LeftClick 1
+LeftClick 1%s
 MoveTo 870, 772
 Delay 491
 LeftClick 1
@@ -147,11 +155,11 @@ Delay 509
 LeftClick 1
 Delay 508
 LeftClick 1
-'''
+''' % close_last_week
 
 def open_pad():
     return '''
-MoveTo 504, 475
+MoveTo 505, 400
 Delay 943
 LeftClick 1
 '''
@@ -233,10 +241,11 @@ Dealy 504
 LeftClick 1
 '''.format(958 + offset)
 
-def run_fuck1(f, username, backspace, password, auto_signin=True, keep=True):
-    item_pos = 5
+def run_fuck1(f, username, backspace, password, auto_signin=True):
+    login_pos = 3
+    item_pos = 4
     f.write(into_server(remeber=True))
-    if keep:
+    if backspace > 0:
         f.write(keep_input_block())
     f.writelines("%s\n" % l for l in a_account(username, backspace, password))
     f.write(enter_mode())
@@ -244,17 +253,19 @@ def run_fuck1(f, username, backspace, password, auto_signin=True, keep=True):
     if auto_signin:
         f.write(signin())
     f.write(close_pad())
-    f.write(commu())
+    f.write(commu(False))
     # f.write(message())
     f.write(open_pad())
     # f.write(click_item(item_pos, 2))
     f.write(click_commu_task(item_pos + 2))
-    # f.write(click_item(item_pos - 1, 0, block_count=1))
-    f.write(click_item(item_pos, 0, block_count=1))
+    # f.write(click_item(login_pos, 1, block_count=1))
+    # f.write(click_item(item_pos, 1, block_count=2))
+    f.write(click_item(login_pos, 0, block_count=1))
+    # f.write(click_item(login_pos, 1, block_count=1))
     # f.write(accept_and_click_item(item_pos - 1, 8, block_count=2, times=7))
     # f.write(click_item(5, 0))
     # f.write(click_item(5, 0))
-    # f.write(click_item(item_pos, 0, block_count=1))
+    # f.write(click_item(item_pos, 1, block_count=1))
     # f.write(click_item(4, 9))
     # f.write(click_item(4, 8))
     # f.write(select_item(0, 3))
