@@ -92,12 +92,13 @@ def a_account(username,backspace,password,ie=True):
 def enter_mode():
     return '''
 MoveTo 822, 560
-Delay 2064
-LeftClick 1
-MoveTo 978, 740
-Delay 1079
+Delay 1604
 LeftClick 1
 '''
+#MoveTo 978, 740
+#Delay 1079
+#LeftClick 1
+#'''
 
 def signin():
     return '''
@@ -110,9 +111,9 @@ Delay 48
 def close_upsell():
     return '''
 MoveTo 1417, 272
-Delay 602
+Delay 1102
 LeftClick 1
-Delay 88
+Delay 788
 '''
 
 def close_pad():
@@ -157,9 +158,35 @@ Delay 508
 LeftClick 1
 ''' % close_last_week
 
-def open_pad():
+def pray():
     return '''
+MoveTo 511, 326
+Delay 2042
+LeftClick 1
+MoveTo 1074, 731
+Delay 703
+LeftClick 1
+MoveTo 962, 800
+Delay 2602
+LeftClick 1
+MoveTo 1016, 509
+Delay 3102
+LeftClick 1
+MoveTo 1361, 277
+Delay 502
+LeftClick 1
+'''
+
+def open_pad(with_prey=False):
+    if not with_prey:
+        return '''
 MoveTo 505, 400
+Delay 943
+LeftClick 1
+'''
+    else:
+        return '''
+MoveTo 505, 475
 Delay 943
 LeftClick 1
 '''
@@ -241,9 +268,22 @@ Dealy 504
 LeftClick 1
 '''.format(958 + offset)
 
-def run_fuck1(f, username, backspace, password, auto_signin=True):
-    login_pos = 3
-    item_pos = 4
+def get_close_count():
+    return 3
+
+def run_preyonly(f, username, backspace, password, auto_signin=True):
+    f.write(into_server(remeber=True))
+    if backspace > 0:
+        f.write(keep_input_block())
+    f.writelines("%s\n" % l for l in a_account(username, backspace, password))
+    f.write(enter_mode())
+    f.write(pray())
+    f.write(close_pad())
+    f.writelines("%s\n" % l for l in a_close_page(get_close_count()))
+
+def run_as_default(f, username, backspace, password, auto_signin=True):
+    login_pos = 5
+    item_pos = 6
     f.write(into_server(remeber=True))
     if backspace > 0:
         f.write(keep_input_block())
@@ -253,15 +293,17 @@ def run_fuck1(f, username, backspace, password, auto_signin=True):
     if auto_signin:
         f.write(signin())
     f.write(close_pad())
-    f.write(commu(False))
+    f.write(commu(True))
     # f.write(message())
-    f.write(open_pad())
+    # f.write(pray())
+    f.write(open_pad(with_prey=True))
     # f.write(click_item(item_pos, 2))
     f.write(click_commu_task(item_pos + 2))
-    # f.write(click_item(login_pos, 1, block_count=1))
-    # f.write(click_item(item_pos, 1, block_count=2))
+    # f.write(click_item(item_pos, 5, block_count=2))
+    # f.write(click_item(login_pos, 2, block_count=2))
+    # f.write(click_item(item_pos, 4, block_count=2))
+    # f.write(click_item(login_pos, 3, block_count=2))
     f.write(click_item(login_pos, 0, block_count=1))
-    # f.write(click_item(login_pos, 1, block_count=1))
     # f.write(accept_and_click_item(item_pos - 1, 8, block_count=2, times=7))
     # f.write(click_item(5, 0))
     # f.write(click_item(5, 0))
@@ -270,25 +312,51 @@ def run_fuck1(f, username, backspace, password, auto_signin=True):
     # f.write(click_item(4, 8))
     # f.write(select_item(0, 3))
     f.write(close_pad())
-    f.writelines("%s\n" % l for l in a_close_page(4))
+    f.writelines("%s\n" % l for l in a_close_page(get_close_count()))
 
-def run_monday_fuck1(f, username, backspace, password, keep=True):
+def run_complete(f, username, backspace, password, auto_signin=True):
+    pos = 3
     f.write(into_server(remeber=True))
-    if keep:
+    if backspace > 0:
         f.write(keep_input_block())
     f.writelines("%s\n" % l for l in a_account(username, backspace, password))
     f.write(enter_mode())
+    f.write(open_pad(with_prey=False))
+    f.write(close_upsell())
+    f.write(click_item(pos, 0, block_count=1))
     f.write(close_pad())
-    f.write(commu())
-    f.write(open_pad())
-    f.write(click_commu_task(5))
-    f.write(click_item(3, 1))
+    f.writelines("%s\n" % l for l in a_close_page(get_close_count()))
+
+def run_once(f, username, backspace, password, auto_signin=True):
+    login_pos = 3
+    f.write(into_server(remeber=True))
+    if backspace > 0:
+        f.write(keep_input_block())
+    f.writelines("%s\n" % l for l in a_account(username, backspace, password))
+    f.write(enter_mode())
+    f.write(open_pad(with_prey=False))
+    f.write(close_upsell())
+    f.write(click_item(login_pos, 0, block_count=1))
     f.write(close_pad())
-    f.write(open_pad())
-    f.write(click_item(3, 0))
-    f.write(click_item(3, 11))
-    f.write(close_pad())
-    f.writelines("%s\n" % l for l in a_close_page(4))
+    f.writelines("%s\n" % l for l in a_close_page(get_close_count()))
+
+# def run_monday_fuck1(f, username, backspace, password, keep=True):
+#     f.write(into_server(remeber=True))
+#     if keep:
+#         f.write(keep_input_block())
+#     f.writelines("%s\n" % l for l in a_account(username, backspace, password))
+#     f.write(enter_mode())
+#     f.write(close_pad())
+#     f.write(commu())
+#     f.write(open_pad())
+#     f.write(click_commu_task(5))
+#     f.write(click_item(3, 1))
+#     f.write(close_pad())
+#     f.write(open_pad())
+#     f.write(click_item(3, 0))
+#     f.write(click_item(3, 11))
+#     f.write(close_pad())
+#     f.writelines("%s\n" % l for l in a_close_page(4))
 
 '''
 call this funciton in mysgslogin.py

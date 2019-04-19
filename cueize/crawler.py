@@ -122,8 +122,8 @@ def crawl_page(single):
                     pair = (meta_parser.normalize(title), is_off_vocal)
                     if pair not in table:
                         table[pair] = song
-        elif h3.name == 'h2' and (h3.text.startswith('選抜メンバー')):
-            mode = 'unit_mode'
+        elif h3.name == 'h2' and '選抜メンバー' in h3.text:
+            mode = 'unit_mode' # not a graceful way of end of while, actually...
     return True
 
 def load_from_wiki_template(album_title):

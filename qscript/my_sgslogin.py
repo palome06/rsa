@@ -2,7 +2,12 @@ import sgslogin
 
 if __name__ == '__main__':
     sgslogin.write_down([
-        ('sgsxj401', 0, 'yuntianhe', True),
+        ('sgsx5q01', 0, 'xiahoujinxuan', True),
+        ('2', 1, 'xiaxia'),
+        ('3', 1, 'muchanglan'),
+        ('4', 1, 'jiangcheng'),
+        ('j401', 4, 'yuntianhe'),
+        # ('sgsxj401', 0, 'yuntianhe', True),
         ('2', 1, 'hanlingsha'),
         ('3', 1, 'liumengli'),
         ('4', 1, 'murongziying'),
@@ -12,10 +17,6 @@ if __name__ == '__main__':
         ('3', 1, 'xingxuan'),
         ('4', 1, 'wangpengxu'),
         ('5', 1, 'leiyuange'),
-        ('5q01', 4, 'xiahoujinxuan'),
-        ('2', 1, 'xiaxia'),
-        ('3', 1, 'muchanglan'),
-        ('4', 1, 'jiangcheng'),
         ('j501', 4, 'jiangyunfan'),
         ('2', 1, 'tangyurou'),
         # ('sgsxj502', 0, 'tangyurou', True),
@@ -45,4 +46,5 @@ if __name__ == '__main__':
         ('lr', 2, 'zhaolinger', False),
         ('yr', 2, 'linyueru', False),
         ('bioayu^2sina.cn', 8, 'baiyousb250', False)
-    ], sgslogin.run_fuck1)
+    ], sgslogin.run_as_default)
+# run_preyonly run_as_default, run_complete, run_once
